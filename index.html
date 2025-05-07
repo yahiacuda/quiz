@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Interactive Number Theory Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      background-color: #f4f4f4;
+    }
+    .quiz-container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      transition: opacity 0.5s ease;
+    }
+    .question {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .question.active {
+      display: block;
+      opacity: 1;
+    }
+    .choice {
+      display: block;
+      margin: 8px 0;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .choice.correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+      color: #155724;
+    }
+    .choice.incorrect {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+      color: #721c24;
+    }
+    #nextBtn {
+      display: none;
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>Number Theory Quiz</h1>
+    <div id="questions"></div>
+    <button id="nextBtn" onclick="showNextQuestion()">Next Question</button>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        q: "The process of expressing a number as a product of its prime factors is called:",
+        options: ["A) Modular reduction", "B) Division", "C) Prime factorization", "D) Simplification"],
+        answer: "C"
+      },
+      {
+        q: "The smallest positive integer divisible by both a and b is the:",
+        options: ["A) Greatest common divisor", "B) Modular inverse", "C) Least common multiple", "D) Relative prime"],
+        answer: "C"
+      },
+      {
+        q: "The largest integer that divides both a and b without remainder is the:",
+        options: ["A) Prime factor", "B) Least common multiple", "C) Modular base", "D) Greatest common divisor"],
+        answer: "D"
+      },
+
+      {
+        q: "Euclid’s algorithm is based on the identity gcd(a, b) = gcd(b, ___):",
+        options: ["A) a + b", "B) a * b", "C) a mod b", "D) a - b"],
+        answer: "C"
+      },
+      {
+        q: "The Extended Euclidean Algorithm finds integers i and j such that gcd(a, b) =:",
+        options: ["A) a² + b²", "B) i*a + j*b", "C) a - b", "D) a * b"],
+        answer: "B"
+      },
+      {
+        q: "A number that has exactly two distinct positive divisors is called:",
+        options: ["A) Unit", "B) Composite", "C) Prime", "D) Relative"],
+        answer: "C"
+      },
+     
+      {
+        q: "A number greater than 1 that is not prime is called a:",
+        options: ["A) Factor", "B) Multiple", "C) Unit", "D) Composite number"],
+        answer: "D"
+      },
+      {
+        q: "A number a is a multiple of b if:",
+        options: ["A) a = b + k", "B) a = k*b for some integer k", "C) a = b^k", "D) a = b - k"],
+        answer: "B"
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+
+    const questionsDiv = document.getElementById("questions");
+    const nextBtn = document.getElementById("nextBtn");
+
+    function renderQuestion(index) {
+      const qData = quizData[index];
+      const qDiv = document.createElement("div");
+      qDiv.className = "question active";
+      qDiv.setAttribute("data-answer", qData.answer);
+
+      const qText = document.createElement("p");
+      qText.textContent = `${index + 1}. ${qData.q}`;
+      qDiv.appendChild(qText);
+
+      qData.options.forEach(opt => {
+        const optVal = opt.charAt(0);
+        const choice = document.createElement("div");
+        choice.className = "choice";
+        choice.setAttribute("data-option", optVal);
+        choice.textContent = opt;
+        choice.addEventListener("click", () => handleAnswer(choice, qDiv));
+        qDiv.appendChild(choice);
+      });
+
+      questionsDiv.innerHTML = "";
+      questionsDiv.appendChild(qDiv);
+    }
+
+    function handleAnswer(choice, questionDiv) {
+      const selected = choice.getAttribute("data-option");
+      const correct = questionDiv.getAttribute("data-answer");
+
+      if (selected === correct) {
+        choice.classList.add("correct");
+        nextBtn.style.display = "none";
+        setTimeout(() => {
+          currentQuestionIndex++;
+          if (currentQuestionIndex < quizData.length) {
+            renderQuestion(currentQuestionIndex);
+          } else {
+            questionsDiv.innerHTML = "<h3>You completed the quiz!</h3>";
+          }
+        }, 800);
+      } else {
+        choice.classList.add("incorrect");
+        const correctChoice = questionDiv.querySelector(`.choice[data-option='${correct}']`);
+        correctChoice.classList.add("correct");
+        nextBtn.style.display = "inline-block";
+      }
+
+      const allChoices = questionDiv.querySelectorAll(".choice");
+      allChoices.forEach(c => c.style.pointerEvents = "none");
+    }
+
+    function showNextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        renderQuestion(currentQuestionIndex);
+        nextBtn.style.display = "none";
+      } else {
+        questionsDiv.innerHTML = "<h3>You completed the quiz!</h3>";
+        nextBtn.style.display = "none";
+      }
+    }
+
+    renderQuestion(currentQuestionIndex);
+  </script>
+</body>
+</html>
